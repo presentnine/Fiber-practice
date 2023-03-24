@@ -75,6 +75,10 @@ func UserUpdate(c *fiber.Ctx) error {
 func UserDelete(c *fiber.Ctx) error {
 	db := database.Get()
 
+	if err := db.First(&models.User{}, c.Params("id")).Error; err != nil {
+		return err
+	}
+
 	if err := db.Delete(&models.User{}, c.Params("id")).Error; err != nil {
 		return err
 	}
