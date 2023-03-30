@@ -8,10 +8,9 @@ import (
 )
 
 func UserGet(c *fiber.Ctx) error {
-	db := database.Get()
 	user := new(models.User)
 
-	if err := db.First(&user, c.Params("id")).Error; err != nil {
+	if err := database.DB.First(&user, c.Params("id")).Error; err != nil {
 		return err
 	}
 
@@ -22,7 +21,6 @@ func UserGet(c *fiber.Ctx) error {
 }
 
 func UserCreate(c *fiber.Ctx) error {
-	db := database.Get()
 	userCreateRequestDto := new(dtos.UserCreateRequestDto)
 
 	if err := c.BodyParser(userCreateRequestDto); err != nil {
@@ -33,7 +31,7 @@ func UserCreate(c *fiber.Ctx) error {
 		Nickname: userCreateRequestDto.Nickname,
 	}
 
-	if err := db.Create(&user).Error; err != nil {
+	if err := database.DB.Create(&user).Error; err != nil {
 		return err
 	}
 
@@ -44,8 +42,6 @@ func UserCreate(c *fiber.Ctx) error {
 }
 
 func UserUpdate(c *fiber.Ctx) error {
-	db := database.Get()
-
 	userId, err := c.ParamsInt("id")
 	if err != nil {
 		return err
@@ -57,12 +53,12 @@ func UserUpdate(c *fiber.Ctx) error {
 	}
 
 	user := new(models.User)
-	if err := db.First(&user, userId).Error; err != nil {
+	if err := database.DB.First(&user, userId).Error; err != nil {
 		return err
 	}
 	user.Nickname = userUpdateRequestDto.Nickname
 
-	if err := db.Save(&user).Error; err != nil {
+	if err := database.DB.Save(&user).Error; err != nil {
 		return err
 	}
 
@@ -73,13 +69,10 @@ func UserUpdate(c *fiber.Ctx) error {
 }
 
 func UserDelete(c *fiber.Ctx) error {
-	db := database.Get()
-
-	if err := db.First(&models.User{}, c.Params("id")).Error; err != nil {
+	if err := database.DB.First(&models.User{}, c.Params("id")).Error; err != nil {
 		return err
 	}
-
-	if err := db.Delete(&models.User{}, c.Params("id")).Error; err != nil {
+	if err := database.DB.Delete(&models.User{}, c.Params("id")).Error; err != nil {
 		return err
 	}
 
